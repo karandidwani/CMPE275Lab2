@@ -1,0 +1,6 @@
+ INSERT INTO FLIGHT VALUES ('GH2Z1',"12-12-12 12:00:00","11-11-11 1:00:00 ","xxxx","Seattle, WA","120","Boeing","Boeing 757","1998","120.00","10","San Jose, CA","1");
+ INSERT INTO FLIGHT VALUES ('HZ124',"12-2-12 2:00:00","12-1-1 4:00:00 ","xxxxxxxx","San Jose, CA","120","Boeing","Boeing 757","1998","120.00","10","Seattle, WA","1");
+ INSERT INTO FLIGHT VALUES ('KJ124',"12-2-12 2:00:00","12-1-1 4:00:00 ","xyxyxyx","San Jose, CA","150","Boeing","Boeing 757","1999","120.00","10","Washington, DC","2");
+ INSERT INTO RESERVATION VALUES (1, "420",1 );
+ INSERT INTO RESERVATION VALUES (2, "150",1 );
+ INSERT INTO PASSENGER VALUES (1, 22, "Karan", "male", "Didwani","8622838698");
