@@ -5,6 +5,7 @@ import com.cmpe275lab2.flightreservation.Entity.Plane;
 import com.cmpe275lab2.flightreservation.Repository.FlightRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -145,7 +146,7 @@ public class FlightService {
         } else {
             try {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(getResponse("BadRequest", "404", "No flight can details can be found for flight number " + flightNumber + "").toString(), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(getResponse("BadRequest", "404", "No flight details are found for flight number " + flightNumber + "").toString(), HttpStatus.NOT_FOUND);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -162,7 +163,10 @@ public class FlightService {
 
         if (flight != null) {
 
-            if ((flightRepository.findByFlightNumberAndReservationListIsNotNull(flightNumber))==null) {
+            Flight temp = flightRepository.findByFlightNumberAndReservationListIsNotNull(flightNumber);
+            //System.out.println(temp.toString());
+
+            if (temp != null) {
 
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
                 try {
@@ -179,7 +183,7 @@ public class FlightService {
                     httpHeaders.setContentType(MediaType.APPLICATION_XML);
                     JSONObject response = getResponse("Response", "200", "Flight with number " + flightNumber + " is deleted successfully");
                     System.out.println(response);
-                    return new ResponseEntity<>(response.toString(), httpHeaders, HttpStatus.OK);
+                    return new ResponseEntity<>(XML.toString(response), httpHeaders, HttpStatus.OK);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
