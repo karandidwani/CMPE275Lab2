@@ -27,7 +27,7 @@ public class Flight {
     private int seatsLeft;
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY,  mappedBy = "id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passengerId")
     private List<Passenger> passengerList;
 
     public Flight(String flightNumber, Date arrivalTime, Plane plane, double price, String fromCity, String toCity, Date departureTime, String description) {

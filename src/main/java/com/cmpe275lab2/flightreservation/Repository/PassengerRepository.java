@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PassengerRepository extends CrudRepository<Passenger,String> {
 
-    Passenger findFirstById(String id);
+    Passenger findFirstByPassengerId(int id);
 
+    Passenger findByPhone(String phone);
 }

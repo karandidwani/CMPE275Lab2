@@ -1,6 +1,7 @@
 package com.cmpe275lab2.flightreservation.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String reservationNumber;
+    private int reservationNumber;
 
     private double price;
 
@@ -32,11 +33,11 @@ public class Reservation {
     }
 
     public String getReservationNumber() {
-        return reservationNumber;
+        return String.valueOf(reservationNumber);
     }
 
     public void setReservationNumber(String reservationNumber) {
-        this.reservationNumber = reservationNumber;
+        this.reservationNumber = Integer.parseInt(reservationNumber);
     }
 
     public Passenger getPassenger() {

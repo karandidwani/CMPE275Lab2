@@ -9,12 +9,13 @@ import java.util.List;
 public class Passenger {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
-    private String firstname;
-    private String lastname;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int passengerId;
+    private String firstName;
+    private String lastName;
     private int age;
     private String gender;
+    @Column(unique = true)
     private String phone;
 
     //Reservation - One passenger can have multiple reservations
@@ -22,18 +23,9 @@ public class Passenger {
     @JsonManagedReference
     private List<Reservation> reservations;
 
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
-
-    public Passenger(String firstname, String lastname, int age, String gender, String phone, List<Reservation> reservations, Flight flight) {
-        this.firstname = firstname;
-        this.lastname = lastname;
+    public Passenger(String firstName, String lastname, int age, String gender, String phone, List<Reservation> reservations) {
+        this.firstName = firstName;
+        this.lastName = lastname;
         this.age = age;
         this.gender = gender;
         this.phone = phone;
@@ -43,28 +35,28 @@ public class Passenger {
     public Passenger() {
     }
 
-    public String getId() {
-        return id;
+    public int getPassengerId() {
+        return passengerId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPassengerId(String passengerId) {
+        this.passengerId = Integer.parseInt(passengerId);
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getAge() {
@@ -91,12 +83,20 @@ public class Passenger {
         this.phone = phone;
     }
 
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
     @Override
     public String toString() {
         return "Passenger{" +
-                "id='" + id + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
+                "id='" + passengerId + '\'' +
+                ", firstname='" + firstName + '\'' +
+                ", lastname='" + lastName + '\'' +
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 ", phone='" + phone + '\'' +

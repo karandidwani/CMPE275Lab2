@@ -24,6 +24,9 @@ public class FlightService {
     @Autowired
     FlightRepository flightRepository;
 
+    @Autowired
+    ResponseService responseService;
+
 
 
     public ResponseEntity<?> createOrUpdateFlight(String flightNumber, int capacity, String model, String manufacturer, int year, double price, String fromCity, String toCity, String departureTime, String arrivalTime, String description) {
@@ -47,7 +50,7 @@ public class FlightService {
             //Departure date is greater than arrival date
             //throw error
             try {
-                return new ResponseEntity<>(getResponse("BadRequest", "400",
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "400",
                         "The Request cannot be completed because the departure time should be before the arrival time").toString(),
                         HttpStatus.NOT_FOUND);
             } catch (org.json.JSONException e) {
@@ -61,7 +64,7 @@ public class FlightService {
 
             //source and destination cities can not be the same. Throw error
             try {
-                return new ResponseEntity<>(getResponse("BadRequest", "400",
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "400",
                         "The Request cannot be completed because the source and destination cities are same").toString(),
                         HttpStatus.NOT_FOUND);
             } catch (org.json.JSONException e) {
@@ -88,7 +91,7 @@ public class FlightService {
             //check if capacity is changed then update seats left
             int existingCapacity = flight.getPlane().getCapacity(); //400
             int existingSeatsLeft = flight.getSeatsLeft();  //390
-            if (existingCapacity != capacity && existingSeatsLeft < capacity) {
+            if (existingSeatsLeft <= capacity) {
                 //390 < 410 (if capacity is increased) or 390 < 395 (if capacity is decreased)
                 //if capacity is increased/decreased then update the number of seats left
                 flight.setSeatsLeft(existingSeatsLeft + (capacity - existingCapacity));
@@ -97,7 +100,7 @@ public class FlightService {
             } else {
                 //return error code 400 and cancel the update
                 try {
-                    return new ResponseEntity<>(getResponse("BadRequest", "400",
+                    return new ResponseEntity<>(responseService.getResponse("BadRequest", "400",
                             "The Request cannot be completed because the Seats capacity of the flight cannot be lower than the reserved number of seats").toString(),
                             HttpStatus.NOT_FOUND);
                 } catch (org.json.JSONException e) {
@@ -146,7 +149,7 @@ public class FlightService {
         } else {
             try {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(getResponse("BadRequest", "404", "No flight details are found for flight number " + flightNumber + "").toString(), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "404", "No flight details are found for flight number " + flightNumber + "").toString(), HttpStatus.NOT_FOUND);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
@@ -170,7 +173,7 @@ public class FlightService {
 
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
                 try {
-                    JSONObject response = getResponse("BadRequest", "400", "Flight with number " + flightNumber + " can not be deleted as it has active reservations");
+                    JSONObject response = responseService.getResponse("BadRequest", "400", "Flight with number " + flightNumber + " can not be deleted as it has active reservations");
                     return new ResponseEntity<>(response.toString(), httpHeaders, HttpStatus.BAD_REQUEST);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -181,7 +184,7 @@ public class FlightService {
                 flightRepository.delete(flight);
                 try {
                     httpHeaders.setContentType(MediaType.APPLICATION_XML);
-                    JSONObject response = getResponse("Response", "200", "Flight with number " + flightNumber + " is deleted successfully");
+                    JSONObject response = responseService.getResponse("Response", "200", "Flight with number " + flightNumber + " is deleted successfully");
                     System.out.println(response);
                     return new ResponseEntity<>(XML.toString(response), httpHeaders, HttpStatus.OK);
                 } catch (JSONException e) {
@@ -193,7 +196,7 @@ public class FlightService {
         } else {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             try {
-                JSONObject response = getResponse("BadRequest", "404", "Flight with number " + flightNumber + " can not be found");
+                JSONObject response = responseService.getResponse("BadRequest", "404", "Flight with number " + flightNumber + " can not be found");
                 return new ResponseEntity<>(response.toString(), httpHeaders, HttpStatus.NOT_FOUND);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -201,23 +204,6 @@ public class FlightService {
             }
 
         }
-
-    }
-
-    //Create a Response object for requests which got error or ran successfully
-    public JSONObject getResponse(String Response, String code, String message) throws org.json.JSONException {
-
-        //create error message in JSON
-        JSONObject errorJSON = new JSONObject();
-        // add error attributes
-        errorJSON.put("code", code);
-        errorJSON.put("msg", message);
-        //create parent response JSON
-        JSONObject response = new JSONObject();
-        //add error JSON in response JSON
-        response.put(Response, errorJSON);
-
-        return response;
 
     }
 
