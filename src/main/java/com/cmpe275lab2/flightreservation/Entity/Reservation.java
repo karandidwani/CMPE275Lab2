@@ -32,12 +32,12 @@ public class Reservation {
     public Reservation() {
     }
 
-    public String getReservationNumber() {
-        return String.valueOf(reservationNumber);
+    public int getReservationNumber() {
+        return reservationNumber;
     }
 
-    public void setReservationNumber(String reservationNumber) {
-        this.reservationNumber = Integer.parseInt(reservationNumber);
+    public void setReservationNumber(int reservationNumber) {
+        this.reservationNumber = reservationNumber;
     }
 
     public Passenger getPassenger() {

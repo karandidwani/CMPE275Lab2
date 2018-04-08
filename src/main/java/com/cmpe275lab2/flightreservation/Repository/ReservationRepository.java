@@ -8,4 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends CrudRepository<Reservation,String> {
 
+    Reservation findFirstByPassenger(Passenger PassengerId);
+
+    Reservation getReservationByReservationNumber(int reservationNumber);
+
+
 }
