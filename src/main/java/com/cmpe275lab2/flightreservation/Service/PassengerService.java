@@ -3,6 +3,8 @@ package com.cmpe275lab2.flightreservation.Service;
 import com.cmpe275lab2.flightreservation.Entity.Passenger;
 import com.cmpe275lab2.flightreservation.Repository.PassengerRepository;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ public class PassengerService {
 
     @Autowired
     private ResponseService responseService;
+
+    @Autowired
+    PassengerResponseService passengerResponseService;
 
     public List<Passenger> getAllPassengers() {
         return (List<Passenger>) passengerRepository.findAll();
@@ -55,13 +60,21 @@ public class PassengerService {
             Passenger passenger = passengerRepository.findFirstByPassengerId(id);
             HttpHeaders httpHeaders = new HttpHeaders();
 
+
             if (passenger != null) {
+
+                JSONObject passengerJSON = passengerResponseService.getPassengerJSON(passenger);
+
                 if (format.equals("JSON")) {
                     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                    return new ResponseEntity<>(passenger, httpHeaders, HttpStatus.OK);
+                    return new ResponseEntity<>(passengerJSON.toString(), httpHeaders, HttpStatus.OK);
                 } else {
                     httpHeaders.setContentType(MediaType.APPLICATION_XML);
-                    return new ResponseEntity<>(passenger, httpHeaders, HttpStatus.OK);
+                    try {
+                        return new ResponseEntity<>(XML.toString(passengerJSON), httpHeaders, HttpStatus.OK);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 try {

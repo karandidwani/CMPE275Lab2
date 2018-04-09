@@ -35,6 +35,9 @@ public class ReservationService {
     @Autowired
     ResponseService responseService;
 
+    @Autowired
+    ReservationResponseService reservationResponseService;
+
     public ResponseEntity<?> makeReservation(int passengerId, String flightLists) {
 
         Passenger passenger = passengerRepository.findFirstByPassengerId(passengerId);
@@ -82,7 +85,7 @@ public class ReservationService {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        JSONObject reservationJSON = responseService.getReservationJSON(reservation);
+        JSONObject reservationJSON = reservationResponseService.getReservationJSON(reservation);
 
         if (reservation != null) {
             if (format.equals("JSON")) {
@@ -138,7 +141,4 @@ public class ReservationService {
 
     }
 
-    /*public ResponseEntity<?> updateReservation(int reservationNumber, String flightsAdded, String flightsRemoved){
-        Reservation reservation = reservationRepository.getReservationByReservationNumber(reservationNumber);
-    }*/
 }
