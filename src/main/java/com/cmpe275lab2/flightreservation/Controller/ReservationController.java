@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ReservationController {
+
     @Autowired
     ReservationService reservationService;
 
@@ -19,13 +20,14 @@ public class ReservationController {
     }
 
     //Get Reservation Details
-    @RequestMapping(value = "/reservation/{number}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<?> getReservationJSON(@PathVariable int reservationNumber) {
-        return reservationService.getReservationJSON(reservationNumber);
+    @RequestMapping(value = "/reservation/{reservationNumber}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<?> getReservationJSON(@PathVariable String reservationNumber) {
+
+        return reservationService.getReservation(Integer.parseInt(reservationNumber), "JSON");
     }
 
     //Cancel Reservation
-    @RequestMapping(value = "/reservation/{number}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @RequestMapping(value = "/reservation/{reservationNumber}", method = RequestMethod.DELETE, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<?> cancelReservation(@PathVariable int reservationNumber) {
         return reservationService.cancelReservation(reservationNumber);
     }

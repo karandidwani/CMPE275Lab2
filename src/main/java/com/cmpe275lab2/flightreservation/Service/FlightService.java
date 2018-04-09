@@ -1,6 +1,7 @@
 package com.cmpe275lab2.flightreservation.Service;
 
 import com.cmpe275lab2.flightreservation.Entity.Flight;
+import com.cmpe275lab2.flightreservation.Entity.Passenger;
 import com.cmpe275lab2.flightreservation.Entity.Plane;
 import com.cmpe275lab2.flightreservation.Repository.FlightRepository;
 import org.json.JSONException;
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class FlightService {
@@ -136,6 +138,9 @@ public class FlightService {
     public ResponseEntity<?> getFlight(String flightNumber, String format) {
 
         Flight flight = flightRepository.findByFlightNumber(flightNumber);
+        List<Passenger> passengerList = flight.getPassengerList();
+
+
         HttpHeaders httpHeaders = new HttpHeaders();
         if (flight != null) {
 

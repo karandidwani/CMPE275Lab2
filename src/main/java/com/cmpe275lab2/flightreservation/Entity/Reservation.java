@@ -1,7 +1,5 @@
 package com.cmpe275lab2.flightreservation.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,12 +13,14 @@ public class Reservation {
     private double price;
 
     //Each reservation can have one or more flights reserved
-    @ManyToMany(mappedBy = "reservationList") //@JsonManagedReference
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "flights_reservations", joinColumns = @JoinColumn(name = "reservation_id", referencedColumnName = "reservationNumber"),
+            inverseJoinColumns = @JoinColumn(name = "flight_id", referencedColumnName = "flightNumber"))
     private List<Flight> flights;
 
     //Each passenger can have one or more reservations
     @ManyToOne
-    @JsonBackReference
     private Passenger passenger;
 
     public Reservation(double price, List<Flight> flights, Passenger passenger) {
@@ -64,7 +64,7 @@ public class Reservation {
         this.flights = flights;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "Reservation{" +
                 "reservationNumber='" + reservationNumber + '\'' +
@@ -72,5 +72,5 @@ public class Reservation {
                 ", flights=" + flights +
                 ", passenger=" + passenger +
                 '}';
-    }
+    }*/
 }

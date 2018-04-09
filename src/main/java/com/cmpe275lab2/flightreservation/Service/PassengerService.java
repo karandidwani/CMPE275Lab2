@@ -27,9 +27,18 @@ public class PassengerService {
 
     public ResponseEntity<?> createPassenger(String firstName, String lastName, int age, String gender, String phone) {
 
-        Passenger passenger = new Passenger(firstName, lastName, age, gender, phone, null);
+        Passenger passenger = new Passenger(firstName, lastName, age, gender, phone, null, null);
 
-        passengerRepository.save(passenger);
+        try {
+            passengerRepository.save(passenger);
+        } catch (Exception e) {
+            try {
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "400", "Please enter unique Number. Another passenger with same number already exists").toString(), HttpStatus.NOT_FOUND);
+            } catch (JSONException j) {
+                e.printStackTrace();
+                return new ResponseEntity<>(j, HttpStatus.BAD_GATEWAY);
+            }
+        }
 
         Passenger passengerCreated = passengerRepository.findByPhone(phone);
 

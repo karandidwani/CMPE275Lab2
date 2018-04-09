@@ -8,6 +8,7 @@ import com.cmpe275lab2.flightreservation.Repository.PassengerRepository;
 import com.cmpe275lab2.flightreservation.Repository.ReservationRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,17 +36,16 @@ public class ReservationService {
     ResponseService responseService;
 
     public ResponseEntity<?> makeReservation(int passengerId, String flightLists) {
-        Reservation reservation;
-        System.out.println("flightLists ---" + flightLists);
-        System.out.println("flightLists 13245 ---" + flightLists);
+
         Passenger passenger = passengerRepository.findFirstByPassengerId(passengerId);
-        System.out.println("flightLists 123 ---" + flightLists);
+
         List<String> fList = Arrays.asList(flightLists.split("\\s*,\\s*"));
         List<Flight> flightL = new ArrayList<>();
         double price = 0;
         for (int i = 0; i < fList.size(); i++) {
             Flight flight = flightRepository.findByFlightNumber(fList.get(i));
             System.out.println("i ---" + fList.get(i));
+            System.out.println(flight.toString());
             flightL.add(flight);
             price = price + flight.getPrice();
         }
@@ -59,41 +59,44 @@ public class ReservationService {
                 e.printStackTrace();
             }
         }
-        reservationRepository.save(new Reservation(price, flightL, passenger));
-        return getReservation(passenger, "XML");
-    }
 
-    public ResponseEntity<?> getReservation(Passenger passenger, String format) {
-        Reservation reservation = reservationRepository.findFirstByPassenger(passenger);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        if (reservation != null) {
-            if (format.equals("XML")) {
-                httpHeaders.setContentType(MediaType.APPLICATION_XML);
-                return new ResponseEntity<>(reservation, httpHeaders, HttpStatus.OK);
-            } else {
-                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(reservation, httpHeaders, HttpStatus.OK);
-            }
-        } else {
-            try {
-                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(responseService.getResponse("BadRequest", "400", "No Reservation details are found").toString(), HttpStatus.NOT_FOUND);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-            }
+        Reservation reservation = new Reservation(price, flightL, passenger);
+
+        passenger.getReservations().add(reservation);
+
+        for (Flight f : flightL) {
+            f.getPassengerList().add(passenger);
         }
 
+        reservationRepository.save(reservation);
+
+        Reservation reservationCreated = reservationRepository.findFirstByOrderByReservationNumberDesc();
+
+        return getReservation(reservationCreated.getReservationNumber(), "XML");
     }
 
-    public ResponseEntity<?> getReservationJSON(int reservationNumber) {
 
-        //Flight flight = flightRepository.findByFlightNumber(flightNumber);
+    public ResponseEntity<?> getReservation(int reservationNumber, String format) {
+
         Reservation reservation = reservationRepository.getReservationByReservationNumber(reservationNumber);
+
         HttpHeaders httpHeaders = new HttpHeaders();
+
+        JSONObject reservationJSON = responseService.getReservationJSON(reservation);
+
         if (reservation != null) {
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity<>(reservation, httpHeaders, HttpStatus.OK);
+            if (format.equals("JSON")) {
+                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                return new ResponseEntity<>(reservationJSON.toString(), httpHeaders, HttpStatus.OK);
+            } else {
+                httpHeaders.setContentType(MediaType.APPLICATION_XML);
+                try {
+                    return new ResponseEntity<>(XML.toString(reservationJSON), httpHeaders, HttpStatus.OK);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
         } else {
             try {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);

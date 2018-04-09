@@ -12,5 +12,5 @@ public interface ReservationRepository extends CrudRepository<Reservation,String
 
     Reservation getReservationByReservationNumber(int reservationNumber);
 
-
+    Reservation findFirstByOrderByReservationNumberDesc();
 }
