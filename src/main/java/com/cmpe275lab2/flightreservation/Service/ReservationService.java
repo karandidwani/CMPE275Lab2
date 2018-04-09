@@ -66,6 +66,9 @@ public class ReservationService {
     public ResponseEntity<?> getReservation(Passenger passenger, String format) {
         Reservation reservation = reservationRepository.findFirstByPassenger(passenger);
         HttpHeaders httpHeaders = new HttpHeaders();
+        Passenger passengerTest = reservation.getPassenger();
+        System.out.println("passengerTest.toString( ) "+passengerTest.toString());
+
         if (reservation != null) {
             if (format.equals("XML")) {
                 httpHeaders.setContentType(MediaType.APPLICATION_XML);
@@ -90,6 +93,8 @@ public class ReservationService {
 
         //Flight flight = flightRepository.findByFlightNumber(flightNumber);
         Reservation reservation = reservationRepository.getReservationByReservationNumber(reservationNumber);
+        Passenger passenger = reservation.getPassenger();
+        System.out.println("passenger.toString( ) "+passenger.toString());
         HttpHeaders httpHeaders = new HttpHeaders();
         if (reservation != null) {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);

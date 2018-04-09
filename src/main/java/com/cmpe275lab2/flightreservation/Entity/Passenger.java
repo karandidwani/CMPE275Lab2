@@ -100,7 +100,7 @@ public class Passenger {
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 ", phone='" + phone + '\'' +
-                ", reservations=" + reservations +
+               // ", reservations=" + reservations +
                 '}';
     }
 }
