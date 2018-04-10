@@ -4,6 +4,8 @@ import com.cmpe275lab2.flightreservation.Entity.Flight;
 import com.cmpe275lab2.flightreservation.Entity.Passenger;
 import com.cmpe275lab2.flightreservation.Entity.Plane;
 import com.cmpe275lab2.flightreservation.Repository.FlightRepository;
+import com.cmpe275lab2.flightreservation.Repository.PassengerRepository;
+import com.cmpe275lab2.flightreservation.Repository.ReservationRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -25,6 +27,12 @@ public class FlightService {
 
     @Autowired
     FlightRepository flightRepository;
+
+    @Autowired
+    PassengerRepository passengerRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
 
     @Autowired
     ResponseService responseService;
@@ -89,16 +97,12 @@ public class FlightService {
         } else {
 
             //else update existing flight
+            int seatsReserved = flight.getPlane().getCapacity() - flight.getSeatsLeft(); // 400 - 200 = 200
 
-            //check if capacity is changed then update seats left
-            int existingCapacity = flight.getPlane().getCapacity(); //400
-            int existingSeatsLeft = flight.getSeatsLeft();  //390
-            if (existingSeatsLeft <= capacity) {
-                //390 < 410 (if capacity is increased) or 390 < 395 (if capacity is decreased)
-                //if capacity is increased/decreased then update the number of seats left
-                flight.setSeatsLeft(existingSeatsLeft + (capacity - existingCapacity));
-                //(390 +  410 - 400 = 400) or (390 + 395 - 400 = 385)
-                flight.setPlane(plane);
+            if (capacity > seatsReserved) { //capacity 250
+                flight.getPlane().setCapacity(capacity); //
+                flight.setSeatsLeft(capacity - seatsReserved);
+
             } else {
                 //return error code 400 and cancel the update
                 try {
@@ -117,8 +121,19 @@ public class FlightService {
             Date existingDeparture = flight.getDepartureTime();
             if (existingArrival.equals(formattedArrival) && existingDeparture.equals(formattedDeparture)) {
                 //No change in date, Continue creating the flight
+                System.out.println("No change in date, Continue creating the flight - (existingArrival.equals(formattedArrival) && existingDeparture.equals(formattedDeparture)");
             } else {
                 //get passenger data and handle
+
+                // List<Reservation> reservationList = (List<Reservation>) reservationRepository.findAll();
+
+                List<Passenger> flightPassengerList = flight.getPassengerList();
+                if (flightPassengerList.size() != 0) {
+                    System.out.println(flightPassengerList.size());
+                } else {
+                    System.out.println("Failed");
+                }
+
             }
 
             flight.setDescription(description);

@@ -42,6 +42,14 @@ public class ReservationService {
 
         Passenger passenger = passengerRepository.findFirstByPassengerId(passengerId);
 
+        if (passenger == null) {
+            try {
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "404", "Passenger with Id " + passengerId + " can not be found").toString(), HttpStatus.NOT_FOUND);
+            } catch (JSONException j) {
+                return new ResponseEntity<>(j, HttpStatus.BAD_GATEWAY);
+            }
+        }
+
         List<String> fList = Arrays.asList(flightLists.split("\\s*,\\s*"));
         List<Flight> flightL = new ArrayList<>();
         double price = 0;
@@ -122,7 +130,7 @@ public class ReservationService {
             httpHeaders.setContentType(MediaType.APPLICATION_XML);
             try {
                 JSONObject response = responseService.getResponse("", "200", "Reservation with number " + reservationNumber + " cancelled successfully.");
-                return new ResponseEntity<>(response.toString(), httpHeaders, HttpStatus.OK);
+                return new ResponseEntity<>(XML.toString(response), httpHeaders, HttpStatus.OK);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(e, httpHeaders, HttpStatus.BAD_GATEWAY);

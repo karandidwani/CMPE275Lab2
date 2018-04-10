@@ -24,7 +24,9 @@ public class PassengerResponseService {
             passengerJSON.put("age", passenger.getAge());
             passengerJSON.put("gender", passenger.getGender());
             passengerJSON.put("phone", passenger.getPhone());
-            passengerJSON.put("reservations", getReservationJSON(passenger));
+            if (passenger.getReservations() != null) {
+                passengerJSON.put("reservations", getReservationJSON(passenger));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,11 +40,12 @@ public class PassengerResponseService {
 
         JSONObject reservationJSON = new JSONObject();// return this
         JSONArray reservationJSONArray = new JSONArray();
-        JSONObject flightJSON = new JSONObject();
-        JSONArray flightJSONArray = new JSONArray();
+
 
         try {
             for (Reservation r : p.getReservations()) {
+                JSONObject flightJSON = new JSONObject();
+                JSONArray flightJSONArray = new JSONArray();
                 JSONObject reservation = new JSONObject();
                 reservation.put("reservationNumber", r.getReservationNumber());
                 reservation.put("price", r.getPrice());
