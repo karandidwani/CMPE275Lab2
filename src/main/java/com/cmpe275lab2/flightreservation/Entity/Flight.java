@@ -29,7 +29,7 @@ public class Flight {
     private int seatsLeft;
     private String description;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "passengers_flights", joinColumns = @JoinColumn(name = "flight_id", referencedColumnName = "flightNumber"),
             inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "passengerId"))
     private List<Passenger> passengerList;

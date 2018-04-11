@@ -52,12 +52,12 @@ public class FlightService {
         Date formattedDeparture = null;
         try {
             formattedArrival = df.parse(arrivalTime);
-            System.out.println("formattedArrival --- "+formattedArrival);
+            System.out.println("formattedArrival --- " + formattedArrival);
             formattedDeparture = df.parse(departureTime);
-            System.out.println("Comparision val "+formattedDeparture.compareTo(formattedArrival));
-            System.out.println("Comparision val2 "+formattedDeparture.compareTo(formattedDeparture));
-            System.out.println("departureTime --- "+departureTime);
-            System.out.println("formattedDeparture --- "+formattedDeparture);
+            System.out.println("Comparision val " + formattedDeparture.compareTo(formattedArrival));
+            System.out.println("Comparision val2 " + formattedDeparture.compareTo(formattedDeparture));
+            System.out.println("departureTime --- " + departureTime);
+            System.out.println("formattedDeparture --- " + formattedDeparture);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -162,7 +162,7 @@ public class FlightService {
 
         }
         Flight f1 = flightRepository.findByFlightNumber(flightNumber);
-        System.out.println("Arrival DB Time "+flight.getArrivalTime());
+        System.out.println("Arrival DB Time " + flight.getArrivalTime());
 
         //In both the cases return the newly created/updated flight object in XML format
         return getFlight(flightNumber, "XML");
@@ -204,6 +204,8 @@ public class FlightService {
     //Get flight based on the format specified from controller
     public ResponseEntity<?> getFlight(String flightNumber, String format) {
 
+        System.out.println("In get");
+
         Flight flight = flightRepository.findByFlightNumber(flightNumber);
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -222,11 +224,13 @@ public class FlightService {
                 return new ResponseEntity<>(flightResponseService.getFlightJSON(flight).toString(), httpHeaders, HttpStatus.OK);
             }
         } else {
+            System.out.println("Flight not found hence displaying error");
             try {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(responseService.getResponse("BadRequest", "404", "No flight details are found for flight number " + flightNumber + "").toString(), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(responseService.getResponse("BadRequest", "404", "No flight details are found for flight number " + flightNumber + "").toString(), httpHeaders, HttpStatus.NOT_FOUND);
             } catch (JSONException e) {
                 e.printStackTrace();
+                System.out.println("In Catch");
                 return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
             }
         }

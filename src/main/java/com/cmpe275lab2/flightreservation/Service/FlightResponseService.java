@@ -36,7 +36,8 @@ public class FlightResponseService {
             flightJSON.put("plane", planeJson);
 
             List<Passenger> passengerList = flight.getPassengerList();
-            if (passengerList.isEmpty()) {
+            if (passengerList != null) {
+                System.out.println("Passenger List not Found");
                 flightJSON.put("passengers", getPassengerJSON(passengerList));
             }
         } catch (Exception e) {
