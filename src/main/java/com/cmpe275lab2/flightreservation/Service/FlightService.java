@@ -1,6 +1,7 @@
 package com.cmpe275lab2.flightreservation.Service;
 
 import com.cmpe275lab2.flightreservation.Entity.Flight;
+import com.cmpe275lab2.flightreservation.Entity.Passenger;
 import com.cmpe275lab2.flightreservation.Entity.Plane;
 import com.cmpe275lab2.flightreservation.Repository.FlightRepository;
 import org.json.JSONException;
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class FlightService {
@@ -40,7 +42,12 @@ public class FlightService {
         Date formattedDeparture = null;
         try {
             formattedArrival = df.parse(arrivalTime);
+            System.out.println("formattedArrival --- "+formattedArrival);
             formattedDeparture = df.parse(departureTime);
+            System.out.println("Comparision val "+formattedDeparture.compareTo(formattedArrival));
+            System.out.println("Comparision val2 "+formattedDeparture.compareTo(formattedDeparture));
+            System.out.println("departureTime --- "+departureTime);
+            System.out.println("formattedDeparture --- "+formattedDeparture);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -126,6 +133,9 @@ public class FlightService {
             flightRepository.save(flight);
 
         }
+        Flight f1 = flightRepository.findByFlightNumber(flightNumber);
+        System.out.println("Arrival DB Time "+flight.getArrivalTime());
+
         //In both the cases return the newly created/updated flight object in XML format
         return getFlight(flightNumber, "XML");
 
@@ -136,6 +146,9 @@ public class FlightService {
     public ResponseEntity<?> getFlight(String flightNumber, String format) {
 
         Flight flight = flightRepository.findByFlightNumber(flightNumber);
+        List<Passenger> passengerList = flight.getPassengerList();
+
+
         HttpHeaders httpHeaders = new HttpHeaders();
         if (flight != null) {
 

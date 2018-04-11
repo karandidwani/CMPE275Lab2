@@ -1,7 +1,5 @@
 package com.cmpe275lab2.flightreservation.Entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -20,16 +18,21 @@ public class Passenger {
 
     //Reservation - One passenger can have multiple reservations
     @OneToMany(mappedBy = "passenger")
-    @JsonManagedReference
     private List<Reservation> reservations;
 
-    public Passenger(String firstName, String lastname, int age, String gender, String phone, List<Reservation> reservations) {
+    //Flights
+    @ManyToMany(mappedBy = "passengerList")
+    private List<Flight> flightList;
+
+
+    public Passenger(String firstName, String lastName, int age, String gender, String phone, List<Reservation> reservations, List<Flight> flightList) {
         this.firstName = firstName;
-        this.lastName = lastname;
+        this.lastName = lastName;
         this.age = age;
         this.gender = gender;
         this.phone = phone;
         this.reservations = reservations;
+        this.flightList = flightList;
     }
 
     public Passenger() {
@@ -39,8 +42,16 @@ public class Passenger {
         return passengerId;
     }
 
-    public void setPassengerId(String passengerId) {
-        this.passengerId = Integer.parseInt(passengerId);
+    public void setPassengerId(int passengerId) {
+        this.passengerId = passengerId;
+    }
+
+    public List<Flight> getFlightList() {
+        return flightList;
+    }
+
+    public void setFlightList(List<Flight> flightList) {
+        this.flightList = flightList;
     }
 
     public String getFirstName() {
@@ -100,7 +111,7 @@ public class Passenger {
                 ", age=" + age +
                 ", gender='" + gender + '\'' +
                 ", phone='" + phone + '\'' +
-               // ", reservations=" + reservations +
+                // ", reservations=" + reservations +
                 '}';
     }
 }

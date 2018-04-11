@@ -10,10 +10,12 @@ public class Flight {
     @Id
     private String flightNumber;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "Flights_Reservations",
-    joinColumns = {@JoinColumn(name = "flightNumber") },
-    inverseJoinColumns = {@JoinColumn(name = "reservationNumber")})
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name = "Flights_Reservations",
+//    joinColumns = {@JoinColumn(name = "flightNumber") },
+//    inverseJoinColumns = {@JoinColumn(name = "reservationNumber")})
+
+    @ManyToMany(mappedBy = "flights")
     private List<Reservation> reservationList;
 
     @Embedded
@@ -27,7 +29,9 @@ public class Flight {
     private int seatsLeft;
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passengerId")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "passengers_flights", joinColumns = @JoinColumn(name = "flight_id", referencedColumnName = "flightNumber"),
+            inverseJoinColumns = @JoinColumn(name = "passenger_id", referencedColumnName = "passengerId"))
     private List<Passenger> passengerList;
 
     public Flight(String flightNumber, Date arrivalTime, Plane plane, double price, String fromCity, String toCity, Date departureTime, String description) {
@@ -139,6 +143,7 @@ public class Flight {
 
     public void setPassengerList(List<Passenger> passengerList) { this.passengerList = passengerList; }
 
+/*
     @Override
     public String toString() {
         return "Flight{" +
@@ -154,5 +159,5 @@ public class Flight {
                 ", description='" + description + '\'' +
                 ", passengerList=" + passengerList +
                 '}';
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package com.cmpe275lab2.flightreservation.Entity;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Plane {
@@ -52,7 +52,7 @@ public class Plane {
         this.year = year;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "Plane{" +
                 "capacity=" + capacity +
@@ -60,5 +60,5 @@ public class Plane {
                 ", manufacturer='" + manufacturer + '\'' +
                 ", year=" + year +
                 '}';
-    }
+    }*/
 }
