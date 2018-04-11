@@ -197,8 +197,6 @@ public class FlightService {
     public ResponseEntity<?> getFlight(String flightNumber, String format) {
 
         Flight flight = flightRepository.findByFlightNumber(flightNumber);
-        List<Passenger> passengerList = flight.getPassengerList();
-
 
         HttpHeaders httpHeaders = new HttpHeaders();
         if (flight != null) {

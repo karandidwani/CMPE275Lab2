@@ -91,11 +91,16 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.getReservationByReservationNumber(reservationNumber);
 
+        if (reservation == null) {
+
+        }
+
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        JSONObject reservationJSON = reservationResponseService.getReservationJSON(reservation);
-
         if (reservation != null) {
+
+            JSONObject reservationJSON = reservationResponseService.getReservationJSON(reservation);
+
             if (format.equals("JSON")) {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
                 return new ResponseEntity<>(reservationJSON.toString(), httpHeaders, HttpStatus.OK);
