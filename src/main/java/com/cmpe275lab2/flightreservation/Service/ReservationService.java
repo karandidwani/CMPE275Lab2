@@ -127,14 +127,11 @@ public class ReservationService {
 
 
     public ResponseEntity<?> getReservation(int reservationNumber, String format) {
-
         Reservation reservation = reservationRepository.getReservationByReservationNumber(reservationNumber);
-
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        JSONObject reservationJSON = responseService.getReservationJSON(reservation);
-
         if (reservation != null) {
+            JSONObject reservationJSON = reservationResponseService.getReservationJSON(reservation);
             if (format.equals("JSON")) {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
                 return new ResponseEntity<>(reservationJSON.toString(), httpHeaders, HttpStatus.OK);
@@ -177,7 +174,7 @@ public class ReservationService {
             reservationRepository.delete(reservation);
             httpHeaders.setContentType(MediaType.APPLICATION_XML);
             try {
-                JSONObject response = responseService.getResponse("", "200", "Reservation with number " + reservationNumber + " cancelled successfully.");
+                JSONObject response = responseService.getResponse("Response", "200", "Reservation with number " + reservationNumber + " cancelled successfully.");
                 return new ResponseEntity<>(XML.toString(response), httpHeaders, HttpStatus.OK);
             } catch (JSONException e) {
                 e.printStackTrace();

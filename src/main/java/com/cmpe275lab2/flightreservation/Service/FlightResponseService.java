@@ -36,7 +36,7 @@ public class FlightResponseService {
             flightJSON.put("plane", planeJson);
 
             List<Passenger> passengerList = flight.getPassengerList();
-            if (passengerList.size() != 0) {
+            if (passengerList.isEmpty()) {
                 flightJSON.put("passengers", getPassengerJSON(passengerList));
             }
         } catch (Exception e) {
