@@ -52,7 +52,12 @@ public class FlightService {
         Date formattedDeparture = null;
         try {
             formattedArrival = df.parse(arrivalTime);
+            System.out.println("formattedArrival --- "+formattedArrival);
             formattedDeparture = df.parse(departureTime);
+            System.out.println("Comparision val "+formattedDeparture.compareTo(formattedArrival));
+            System.out.println("Comparision val2 "+formattedDeparture.compareTo(formattedDeparture));
+            System.out.println("departureTime --- "+departureTime);
+            System.out.println("formattedDeparture --- "+formattedDeparture);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -156,6 +161,9 @@ public class FlightService {
             flightRepository.save(flight);
 
         }
+        Flight f1 = flightRepository.findByFlightNumber(flightNumber);
+        System.out.println("Arrival DB Time "+flight.getArrivalTime());
+
         //In both the cases return the newly created/updated flight object in XML format
         return getFlight(flightNumber, "XML");
 
