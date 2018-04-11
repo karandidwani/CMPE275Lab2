@@ -14,7 +14,7 @@ public class Reservation {
 
     //Each reservation can have one or more flights reserved
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "flights_reservations", joinColumns = @JoinColumn(name = "reservation_id", referencedColumnName = "reservationNumber"),
             inverseJoinColumns = @JoinColumn(name = "flight_id", referencedColumnName = "flightNumber"))
     private List<Flight> flights;

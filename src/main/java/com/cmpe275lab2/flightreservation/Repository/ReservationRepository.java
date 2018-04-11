@@ -5,6 +5,8 @@ import com.cmpe275lab2.flightreservation.Entity.Reservation;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ReservationRepository extends CrudRepository<Reservation,String> {
 
@@ -15,4 +17,5 @@ public interface ReservationRepository extends CrudRepository<Reservation,String
     Reservation findFirstByOrderByReservationNumberDesc();
 
     Reservation getReservationByPassenger(Passenger passenger);
+    List<Reservation> findAllByPassenger(Passenger passenger);
 }

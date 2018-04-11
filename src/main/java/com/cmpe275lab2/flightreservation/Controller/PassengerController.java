@@ -34,6 +34,24 @@ public class PassengerController {
             return passengerService.getPassenger(Integer.parseInt(id), "JSON");
         }
 
+    }
+
+    @RequestMapping(value = "/passenger/{id}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> updatePassenger(@PathVariable String id,
+                                             @RequestParam("firstname") String firstName,
+                                             @RequestParam("lastname") String lastName,
+                                             @RequestParam("age") int age,
+                                             @RequestParam("gender") String gender,
+                                             @RequestParam("phone") String phone) {
+
+        return passengerService.updatePassenger(Integer.parseInt(id), firstName, lastName, age, gender, phone);
+
+    }
+
+    @RequestMapping(value = "/passenger/{id}", method = RequestMethod.DELETE, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<?> deletePassenger(@PathVariable String id) {
+
+        return passengerService.deletePassenger(Integer.parseInt(id));
 
     }
 }

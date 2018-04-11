@@ -4,6 +4,8 @@ import com.cmpe275lab2.flightreservation.Entity.Flight;
 import com.cmpe275lab2.flightreservation.Entity.Passenger;
 import com.cmpe275lab2.flightreservation.Entity.Plane;
 import com.cmpe275lab2.flightreservation.Repository.FlightRepository;
+import com.cmpe275lab2.flightreservation.Repository.PassengerRepository;
+import com.cmpe275lab2.flightreservation.Repository.ReservationRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -27,8 +29,16 @@ public class FlightService {
     FlightRepository flightRepository;
 
     @Autowired
+    PassengerRepository passengerRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
+
+    @Autowired
     ResponseService responseService;
 
+    @Autowired
+    FlightResponseService flightResponseService;
 
 
     public ResponseEntity<?> createOrUpdateFlight(String flightNumber, int capacity, String model, String manufacturer, int year, double price, String fromCity, String toCity, String departureTime, String arrivalTime, String description) {
@@ -94,16 +104,12 @@ public class FlightService {
         } else {
 
             //else update existing flight
+            int seatsReserved = flight.getPlane().getCapacity() - flight.getSeatsLeft(); // 400 - 200 = 200
 
-            //check if capacity is changed then update seats left
-            int existingCapacity = flight.getPlane().getCapacity(); //400
-            int existingSeatsLeft = flight.getSeatsLeft();  //390
-            if (existingSeatsLeft <= capacity) {
-                //390 < 410 (if capacity is increased) or 390 < 395 (if capacity is decreased)
-                //if capacity is increased/decreased then update the number of seats left
-                flight.setSeatsLeft(existingSeatsLeft + (capacity - existingCapacity));
-                //(390 +  410 - 400 = 400) or (390 + 395 - 400 = 385)
-                flight.setPlane(plane);
+            if (capacity > seatsReserved) { //capacity 250
+                flight.getPlane().setCapacity(capacity); //
+                flight.setSeatsLeft(capacity - seatsReserved);
+
             } else {
                 //return error code 400 and cancel the update
                 try {
@@ -122,8 +128,30 @@ public class FlightService {
             Date existingDeparture = flight.getDepartureTime();
             if (existingArrival.equals(formattedArrival) && existingDeparture.equals(formattedDeparture)) {
                 //No change in date, Continue creating the flight
+                System.out.println("No change in date, Continue creating the flight - (existingArrival.equals(formattedArrival) && existingDeparture.equals(formattedDeparture)");
             } else {
                 //get passenger data and handle
+                List<Passenger> flightPassengerList = flight.getPassengerList();
+                if (flightPassengerList.size() != 0) {
+                    for (Passenger p : flightPassengerList) {
+                        List<Flight> flights = p.getFlightList();
+                        if (flights.contains(flight)) {
+                            flights.remove(flight);
+                        } else {
+                            System.out.println("Flight is not present");
+                        }
+
+                        if (flights.size() != 0 && isFlightTimingsNotValid(flights)) {
+                            try {
+                                return new ResponseEntity<>(responseService.getResponse("BadRequest", "400",
+                                        "The Request cannot be completed because Flights updated schedule has Overlapping time with other flights of the passengers").toString(),
+                                        HttpStatus.NOT_FOUND);
+                            } catch (org.json.JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
             }
 
             flight.setDescription(description);
@@ -141,6 +169,37 @@ public class FlightService {
 
     }
 
+    //Compare Dates
+    public boolean isFlightTimingsNotValid(List<Flight> flightL) {
+
+        for (int i = 0; i < flightL.size() - 1; i++) {
+            for (int j = i + 1; j < flightL.size(); j++) {
+                //D1 and D2 are the new arrival and departure Time
+                Date D1 = flightL.get(i).getArrivalTime();
+                System.out.println("D1 " + D1);
+                Date D2 = flightL.get(i).getDepartureTime();
+                System.out.println("D2 " + D2);
+
+                //DepTime and Arrival time should not lie between D1 and D2
+                //DepTime is the departure time
+                Date DepTime = flightL.get(j).getDepartureTime();
+
+                //ArrTime is arrival time
+                Date ArrTime = flightL.get(j).getArrivalTime();
+                System.out.println("DepTime " + DepTime);
+                System.out.println("ArrTime " + ArrTime);
+
+                if (D1.compareTo(DepTime) >= 0 && D1.compareTo(ArrTime) <= 0 || D2.compareTo(DepTime) >= 0 && D2.compareTo(ArrTime) <= 0) {
+                    System.out.println("Compare 1 " + (D1.compareTo(DepTime) >= 0 && D1.compareTo(ArrTime) <= 0));
+                    System.out.println("Compare 2 " + (D2.compareTo(DepTime) >= 0 && D2.compareTo(ArrTime) <= 0));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
     //Get flight based on the format specified from controller
     public ResponseEntity<?> getFlight(String flightNumber, String format) {
@@ -154,10 +213,15 @@ public class FlightService {
 
             if (format.equals("XML")) {
                 httpHeaders.setContentType(MediaType.APPLICATION_XML);
-                return new ResponseEntity<>(flight, httpHeaders, HttpStatus.OK);
+                try {
+                    return new ResponseEntity<>(XML.toString(flightResponseService.getFlightJSON(flight)), httpHeaders, HttpStatus.OK);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new ResponseEntity<>(e, httpHeaders, HttpStatus.BAD_GATEWAY);
+                }
             } else {
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<>(flight, httpHeaders, HttpStatus.OK);
+                return new ResponseEntity<>(flightResponseService.getFlightJSON(flight).toString(), httpHeaders, HttpStatus.OK);
             }
         } else {
             try {

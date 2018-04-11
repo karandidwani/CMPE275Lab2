@@ -44,6 +44,8 @@ public class Flight {
         this.arrivalTime = arrivalTime;
         this.description = description;
         this.seatsLeft = plane.getCapacity();
+        this.reservationList = null;
+        this.passengerList = null;
     }
 
     public Flight() {
